@@ -75,12 +75,12 @@ class GoogleLoginView(View):
             else:
                 data = request.POST
 
-            token = data.get('credential')
+            id_token = data.get('credential')
 
-            if not token:
+            if not id_token:
                 return JsonResponse({'error': 'No token provided'}, status=400)
 
-            google_data = GoogleAuthService.verify_google_token(token)
+            google_data = GoogleAuthService.verify_google_token(id_token)
 
             if not google_data:
                 return JsonResponse({'error': 'Invalid token'}, status=400)
