@@ -46,6 +46,13 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
+    # 'rest_framework',
+    # 'rest_framework_simplejwt',
+    # 'rest_framework_simplejwt.token_blacklist',
+
+    # 'dj_rest_auth',
+    # 'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -136,6 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = (
+    # 'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
@@ -153,21 +161,32 @@ SOCIALACCOUNT_PROVIDERS = {
             'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
             'key': ''
         },
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
+        'SCOPE': ['profile', 'email', 'https://www.googleapis.com/auth/calendar'],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+            'prompt': 'consent'
+        },
     }
 }
+
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
+
+SOCIALACCOUNT_STORE_TOKENS = True
+
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
 LOGIN_REDIRECT_URL = "http://localhost:5173/auth-success"
 LOGOUT_REDIRECT_URL = "http://localhost:5173/"
 
 SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
 
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
 
-# CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:8000']
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 # CORS_ALLOW_ALL_ORIGINS = False
