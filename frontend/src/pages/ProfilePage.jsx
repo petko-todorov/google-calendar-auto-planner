@@ -1,25 +1,33 @@
+import CalendarEvents from "../components/CalendarEvents";
+
 const ProfilePage = ({ userData, onLogout }) => {
     return (
-        <div>
-            <h2>{userData?.first_name || 'User'}</h2>
-            {userData?.profile_picture && (
-                <img
-                    src={userData.profile_picture}
-                    alt="Profile"
-                    className="profile-picture"
-                />
-            )}
-            <div className="user-details">
-                <p>{userData?.first_name} {userData?.last_name}</p>
-                <p>{userData?.email}</p>
-                <p>{userData?.google_id}</p>
+        <>
+            <div className="w-4/5 mx-auto border-2">
+                <div className="">
+                    <div className="mt-4 text-center">
+                        <h2 className="text-2xl font-semibold">
+                            {userData?.first_name} {userData?.last_name}
+                        </h2>
+                        {/* <div className="">
+                            <p>{userData?.first_name} {userData?.last_name}</p>
+                            <p>{userData?.email}</p>
+                            <p>{userData?.google_id}</p>
+                        </div> */}
+
+                        {/* <button
+                            onClick={onLogout}
+                        >
+                            Logout
+                        </button> */}
+                    </div>
+
+                    <div className="mt-6 w-full">
+                        <CalendarEvents />
+                    </div>
+                </div>
             </div>
-            <button
-                onClick={onLogout}
-            >
-                Logout
-            </button>
-        </div>
+        </>
     );
 }
 
