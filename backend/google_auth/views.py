@@ -97,7 +97,7 @@ class GoogleLoginView(APIView):
                 'grant_type': 'authorization_code'
             }
             token_response = requests.post(token_url, data=token_data, timeout=5)
-            # print(token_response.text)
+
             if token_response.status_code != 200:
                 return JsonResponse({'error': f'Failed to exchange token: {token_response.text}'}, status=400)
 
