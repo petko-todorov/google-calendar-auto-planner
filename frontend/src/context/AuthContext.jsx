@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import { checkAuthStatus, loginWithGoogle, logout } from '../services/authService';
+import { checkAuthStatus, loginWithGoogleCode, logout } from '../services/authService';
 
 const AuthContext = createContext(null);
 
@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const initializeAuth = async () => {
@@ -16,9 +16,10 @@ export const AuthProvider = ({ children }) => {
                 if (data.is_authenticated) {
                     setIsAuthenticated(true);
                     setUserData(data);
-                }
+                };
             } catch (error) {
                 console.error('Auth initialization error:', error);
+                // setError('Failed to initialize authentication.');
             } finally {
                 setLoading(false);
             }
@@ -27,10 +28,10 @@ export const AuthProvider = ({ children }) => {
         initializeAuth();
     }, []);
 
-    const handleLogin = async (credentialResponse) => {
+    const handleLogin = async (authCode) => {
         try {
             setLoading(true);
-            const data = await loginWithGoogle(credentialResponse.credential);
+            const data = await loginWithGoogleCode(authCode);
             setIsAuthenticated(true);
             setUserData(data.user);
             setError(null);
@@ -65,7 +66,7 @@ export const AuthProvider = ({ children }) => {
         error,
         loading,
         login: handleLogin,
-        logout: handleLogout
+        logout: handleLogout,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
