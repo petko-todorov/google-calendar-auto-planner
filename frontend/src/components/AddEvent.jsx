@@ -23,8 +23,9 @@ const roundToNearestQuarter = (date) => {
     return date;
 };
 
-const fetchNewEventAdded = async (year, month, setEvents, setError) => {
+const fetchNewEventAdded = async (year, month, setEvents, setError, setLoading) => {
     try {
+        setLoading(true);
         const data = await fetchCalendarEvents(year, month);
         const monthEvents = data.events || [];
 
@@ -32,8 +33,11 @@ const fetchNewEventAdded = async (year, month, setEvents, setError) => {
 
         setError(null);
     } catch (err) {
+        setLoading(false);
         console.error('Failed to load calendar events:', err);
         setError('Failed to load calendar events');
+    } finally {
+        setLoading(false);
     }
 };
 
@@ -44,7 +48,8 @@ const AddEvent = ({
     currentViewMonth,
     calendarRef,
     setEvents,
-    setError
+    setError,
+    setLoading
 }) => {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
@@ -92,7 +97,8 @@ const AddEvent = ({
                 currentViewMonth.current.year,
                 currentViewMonth.current.month,
                 setEvents,
-                setError
+                setError,
+                setLoading
             );
             calendarRef.current.getApi().refetchEvents();
         } catch (error) {
