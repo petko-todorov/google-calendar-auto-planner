@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from .views import get_csrf_token
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('get-csrf-token/', get_csrf_token, name='get-csrf-token'),
     path('accounts/', include('allauth.urls')),
     path('api/', include([
         path('', include('google_auth.urls')),
