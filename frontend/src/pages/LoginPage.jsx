@@ -1,30 +1,3 @@
-// import { GoogleLogin } from '@react-oauth/google';
-
-// const LoginPage = ({ onLoginSuccess, onLoginError }) => {
-//     return (
-//         <div>
-//             <h2>Please sign in with Google</h2>
-//             <div>
-//                 <GoogleLogin
-//                     onSuccess={onLoginSuccess}
-//                     onError={onLoginError}
-//                     theme="outline"
-//                     shape="rectangular"
-//                     text="signup"
-//                     size="medium"
-//                     locale="en"
-//                     flow="auth-code"
-//                 />
-//                 <useGoogleLogin 
-//             </div>
-//         </div>
-//     );
-
-// }
-
-// export default LoginPage;
-
-
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import googleIcon from '../assets/google-icon.png';

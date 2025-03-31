@@ -11,6 +11,8 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const initializeAuth = async () => {
+            setLoading(true);
+            
             try {
                 const data = await checkAuthStatus();
                 if (data.is_authenticated) {

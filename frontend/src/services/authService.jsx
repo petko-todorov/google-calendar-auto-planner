@@ -7,18 +7,26 @@ export const checkAuthStatus = async () => {
         method: 'GET',
         credentials: 'include'
     });
+
+    if (!response.ok) {
+        throw new Error('Failed to check authentication status');
+    };
     return await response.json();
 };
 
-export const loginWithGoogle = async (credential) => {
-    const response = await fetch(`${currentUrl}/login/`, {
+export const loginWithGoogleCode = async (code) => {
+    const response = await fetch(`${API_BASE_URL}/api/login/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ credential }),
+        body: JSON.stringify({ code }),
         credentials: 'include'
     });
+
+    if (!response.ok) {
+        throw new Error('Failed to login with Google');
+    };
     return await response.json();
 };
 
@@ -29,3 +37,4 @@ export const logout = async () => {
     });
     return true;
 };
+

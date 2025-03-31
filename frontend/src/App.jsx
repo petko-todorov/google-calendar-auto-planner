@@ -8,7 +8,7 @@ import Header from './components/Header';
 
 function App() {
     const { isAuthenticated, userData, error, login, logout, loading } = useAuth();
-
+    
     return (
         <>
             <Header />
@@ -28,7 +28,7 @@ function App() {
                         <LoginPage onLoginSuccess={login} />
                     ) : (
                         <>
-                            {/* <ProfileImageMenu userData={userData} /> */}
+                            <ProfileImageMenu userData={userData} />
                             <ProfilePage userData={userData} onLogout={logout} />
                         </>
                     )}
