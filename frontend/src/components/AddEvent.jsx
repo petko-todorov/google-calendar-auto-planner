@@ -1,45 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem } from '@mui/material';
 import { addCalendarEvent } from '../services/calendarService';
-import { fetchCalendarEvents } from '../services/calendarService';
+import { roundToNearestQuarter, generateTimeOptions } from '../utils/timeUtils';
+import { fetchNewEventAdded } from '../utils/calendarUtils';
 
-
-const generateTimeOptions = () => {
-    const times = [];
-    for (let h = 0; h < 24; h++) {
-        for (let m = 0; m < 60; m += 15) {
-            const hour = h.toString().padStart(2, '0');
-            const minute = m.toString().padStart(2, '0');
-            times.push(`${hour}:${minute}`);
-        }
-    }
-    return times;
-};
-
-const roundToNearestQuarter = (date) => {
-    const minutes = date.getMinutes();
-    const remainder = minutes % 15;
-    date.setMinutes(minutes - remainder);
-    return date;
-};
-
-const fetchNewEventAdded = async (year, month, setEvents, setError, setLoading) => {
-    try {
-        setLoading(true);
-        const data = await fetchCalendarEvents(year, month);
-        const monthEvents = data.events || [];
-
-        setEvents(monthEvents);
-
-        setError(null);
-    } catch (err) {
-        setLoading(false);
-        console.error('Failed to load calendar events:', err);
-        setError('Failed to load calendar events');
-    } finally {
-        setLoading(false);
-    }
-};
 
 const AddEvent = ({
     open,
@@ -82,7 +46,7 @@ const AddEvent = ({
         const eventEnd = new Date(selectedSlot.end);
         eventEnd.setHours(endHour, endMinute, 0, 0);
         eventEnd.setDate(eventStart.getDate());
-
+        // TODO add error/showing text if no space available
         try {
             const data = await addCalendarEvent({
                 summary: 'New Event',
@@ -105,7 +69,7 @@ const AddEvent = ({
             console.error('Error adding event:', error);
         }
 
-        handleClose(); 
+        handleClose();
     };
 
     return (
