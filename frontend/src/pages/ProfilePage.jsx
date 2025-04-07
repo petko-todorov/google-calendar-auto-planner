@@ -3,7 +3,7 @@ import CalendarEvents from "../components/CalendarEvents";
 const ProfilePage = ({ userData, onLogout }) => {
     return (
         <>
-            <div className="w-4/5 mx-auto border-2">
+            <div className="w-11/12 mx-auto border-2">
                 <div className="mt-4 text-center">
                     <h2 className="text-2xl font-semibold">
                         {userData?.first_name} {userData?.last_name}
