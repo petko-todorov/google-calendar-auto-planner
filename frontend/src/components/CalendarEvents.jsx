@@ -7,9 +7,9 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { lineSpinner } from 'ldrs'
 import AddEvent from './AddEvent';
+import EventDetailsDialog from './EventDetailsDialog';
 
 lineSpinner.register()
-
 
 const CalendarEvents = () => {
     const [events, setEvents] = useState([]);
@@ -20,6 +20,8 @@ const CalendarEvents = () => {
     const [loadedMonths, setLoadedMonths] = useState({});
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [eventDialogOpen, setEventDialogOpen] = useState(false); // New state for dialog
 
     const currentViewMonth = useRef({
         year: new Date().getFullYear(),
@@ -40,7 +42,7 @@ const CalendarEvents = () => {
             setLoading(true);
             const data = await fetchCalendarEvents(year, month);
             const monthEvents = data.events || [];
-            
+
             setLoadedMonths(prev => ({
                 ...prev,
                 [cacheKey]: monthEvents
@@ -65,8 +67,24 @@ const CalendarEvents = () => {
         loadEventsForMonth(year, month);
     };
 
+    const handleEventClick = (info) => {
+        info.jsEvent.preventDefault();
+        info.jsEvent.stopPropagation();
+
+        setSelectedEvent(info.event);
+        setEventDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setEventDialogOpen(false);
+        setSelectedEvent(null);
+
+        const { year, month } = currentViewMonth.current;
+        loadEventsForMonth(year, month);
+    };
+
     const handleAddEvent = () => {
-        setOpenModal(true);  // Open the modal when the button is clicked
+        setOpenModal(true);
     };
 
     const formattedEvents = events.map(event => ({
@@ -85,8 +103,6 @@ const CalendarEvents = () => {
 
     return (
         <div className="h-3/5">
-            {/* <h2>Calendar Events</h2> */}
-
             {loading && (
                 <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <l-line-spinner
@@ -124,7 +140,7 @@ const CalendarEvents = () => {
                             className: selectedSlot ? '' : 'opacity-50 pointer-events-none'
                         }
                     }}
-                    aspectRatio={2.1}
+                    aspectRatio={2.27}
                     events={formattedEvents}
                     eventTimeFormat={{ hour: '2-digit', minute: '2-digit', hour12: false }}
                     slotLabelFormat={{
@@ -133,7 +149,6 @@ const CalendarEvents = () => {
                         hour12: false,
                     }}
                     dayMaxEvents={true}
-                    // editable={true}
                     selectable={true}
                     select={(selectedInfo) => {
                         const startTime = selectedInfo.startStr;
@@ -144,11 +159,19 @@ const CalendarEvents = () => {
                             end: new Date(endTime)
                         });
                     }}
-                    eventClick={(info) => {
-                        info.jsEvent.preventDefault();
-                        window.open(info.event.url, '_blank');
-                    }}
+                    eventClick={handleEventClick}
                     datesSet={handleDatesSet}
+                />
+
+                <EventDetailsDialog
+                    open={eventDialogOpen}
+                    selectedEvent={selectedEvent}
+                    handleClose={handleCloseDialog}
+                    currentViewMonth={currentViewMonth}
+                    calendarRef={calendarRef}
+                    setEvents={setEvents}
+                    setError={setError}
+                    setLoading={setLoading}
                 />
             </div>
 
@@ -163,6 +186,7 @@ const CalendarEvents = () => {
                     setEvents={setEvents}
                     setError={setError}
                     setLoading={setLoading}
+                    events={events}
                 />
             )}
         </div>
