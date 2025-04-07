@@ -1,0 +1,4 @@
+.fc-popover,
+.fc-more-popover {
+    z-index: 1111 !important;
+}
