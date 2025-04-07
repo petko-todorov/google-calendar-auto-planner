@@ -30,8 +30,10 @@ class CalendarEventListView(APIView):
             last_day_of_month = calendar.monthrange(year, month)[1]
             last_day = date(year, month, last_day_of_month)
 
-            time_min = datetime.combine(first_day, datetime.min.time()).isoformat() + 'Z'
-            time_max = datetime.combine(last_day, datetime.max.time()).isoformat() + 'Z'
+            time_min = datetime.combine(
+                first_day, datetime.min.time()).isoformat() + 'Z'
+            time_max = datetime.combine(
+                last_day, datetime.max.time()).isoformat() + 'Z'
 
             url = f'https://www.googleapis.com/calendar/v3/calendars/{calendar_id}/events'
             params = {
@@ -102,7 +104,8 @@ class CalendarAddAutoEventView(APIView):
                 'Authorization': f'Bearer {access_token}',
                 'Content-Type': 'application/json'
             }
-            response = requests.post(url, json=event_data, headers=headers, timeout=5)
+            response = requests.post(
+                url, json=event_data, headers=headers, timeout=5)
             print(response.text)
             if response.status_code == 200:
                 return Response({'message': 'Event added successfully'})
@@ -111,3 +114,33 @@ class CalendarAddAutoEventView(APIView):
 
         except Exception as e:
             return Response({'error': 'Failed to add event'}, status=500)
+
+
+class DeleteCalendarEvent(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, event_id):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+
+        access_token = request.COOKIES.get('access_token')
+
+        if not access_token:
+            return Response({'error': 'Missing access token'}, status=401)
+
+        try:
+            calendar_id = 'primary'
+
+            url = f'https://www.googleapis.com/calendar/v3/calendars/{calendar_id}/events/{event_id}'
+            headers = {
+                'Authorization': f'Bearer {access_token}'
+            }
+            response = requests.delete(url, headers=headers, timeout=5)
+
+            if response.status_code == 200:
+                return Response({'message': 'Event deleted successfully'})
+            else:
+                return Response({'error': f'Failed to delete event: {response.text}'}, status=response.status_code)
+
+        except Exception as e:
+            return Response({'error': 'Failed to delete event'}, status=500)
