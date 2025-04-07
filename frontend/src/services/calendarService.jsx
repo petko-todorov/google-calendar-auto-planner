@@ -65,7 +65,7 @@ export const addCalendarEvent = async (eventData) => {
             },
             body: JSON.stringify(eventData)
         });
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error('Error Response:', {
@@ -80,6 +80,39 @@ export const addCalendarEvent = async (eventData) => {
         return await response.json();
     } catch (error) {
         console.error('Comprehensive Error Adding Calendar Event:', error);
+        throw error;
+    }
+};
+
+export const deleteCalendarEvent = async (eventId) => {
+    try {
+        const csrfToken = await fetchCsrfToken();
+
+        if (!csrfToken) {
+            throw new Error('Unable to retrieve CSRF token');
+        };
+
+        const response = await fetch(`${API_BASE_URL}/api/calendar/delete-event/${eventId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error Response:', {
+                status: response.status,
+                statusText: response.statusText,
+                body: errorText
+            });
+
+            throw new Error(`Failed to delete event: ${errorText || response.statusText}`);
+        };
+    } catch (error) {
+        console.error('Error deleting calendar event:', error);
         throw error;
     }
 };
