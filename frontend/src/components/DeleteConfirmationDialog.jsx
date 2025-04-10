@@ -1,6 +1,11 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography } from '@mui/material';
 
-const DeleteConfirmationDialog = ({ open, eventTitle, onCancel, onConfirm }) => {
+const DeleteConfirmationDialog = ({
+    open,
+    eventTitle,
+    onCancel,
+    onConfirm,
+}) => {
     return (
         <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
             <DialogTitle>
