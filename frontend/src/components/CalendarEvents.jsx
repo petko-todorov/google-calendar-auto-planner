@@ -123,22 +123,15 @@ const CalendarEvents = () => {
                     initialView="dayGridMonth"
                     firstDay={1}
                     headerToolbar={{
-                        left: 'addEventButton addEventButton2',
+                        left: 'addEventButton',
                         center: 'title',
                         right: 'today prev,next'
                     }}
                     customButtons={{
                         addEventButton: {
                             text: 'Add Event',
-                            click: () => {
-                                console.log(123);
-                            }
-                        },
-                        addEventButton2: {
-                            text: 'One Click Add Event',
                             click: handleAddEvent,
-                            className: selectedSlot ? '' : 'opacity-50 pointer-events-none'
-                        }
+                        },
                     }}
                     aspectRatio={2.27}
                     events={formattedEvents}
@@ -172,6 +165,7 @@ const CalendarEvents = () => {
                     setEvents={setEvents}
                     setError={setError}
                     setLoading={setLoading}
+                    setLoadedMonths={setLoadedMonths}
                 />
             </div>
 
@@ -183,10 +177,11 @@ const CalendarEvents = () => {
                     loadEventsForMonth={loadEventsForMonth}
                     currentViewMonth={currentViewMonth}
                     calendarRef={calendarRef}
+                    events={events}
+                    setLoadedMonths={setLoadedMonths}
                     setEvents={setEvents}
                     setError={setError}
                     setLoading={setLoading}
-                    events={events}
                 />
             )}
         </div>
