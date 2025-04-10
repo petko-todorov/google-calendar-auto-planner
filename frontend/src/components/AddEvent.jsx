@@ -12,9 +12,10 @@ const AddEvent = ({
     setEvents,
     setError,
     setLoading,
-    events
+    events,
+    setLoadedMonths
 }) => {
-    const [duration, setDuration] = useState(60); // Default duration in minutes
+    const [duration, setDuration] = useState(60);
     const [availableSlots, setAvailableSlots] = useState([]);
     const [selectedSlotIndex, setSelectedSlotIndex] = useState(0);
 
@@ -80,6 +81,7 @@ const AddEvent = ({
         const selectedSlot = availableSlots[selectedSlotIndex];
 
         try {
+            //  TODO change this
             const data = await addCalendarEvent({
                 summary: 'New Event',
                 start: { dateTime: selectedSlot.start.toISOString(), timeZone: 'UTC' },
@@ -94,10 +96,16 @@ const AddEvent = ({
                 setError,
                 setLoading
             );
+
+            await setLoadedMonths(
+                currentViewMonth.current.year,
+                currentViewMonth.current.month,
+            );
+
             calendarRef.current.getApi().refetchEvents();
         } catch (error) {
             console.error('Error adding event:', error);
-        }
+        };
 
         handleClose();
     };
