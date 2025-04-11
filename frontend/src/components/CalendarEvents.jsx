@@ -1,3 +1,4 @@
+import './CalendarEvents.css';
 import { useState, useRef } from 'react';
 import { fetchCalendarEvents } from '../services/calendarService';
 import { useAuth } from '../context/AuthContext';
@@ -144,12 +145,21 @@ const CalendarEvents = () => {
                     dayMaxEvents={true}
                     selectable={true}
                     select={(selectedInfo) => {
-                        const startTime = selectedInfo.startStr;
-                        const endTime = selectedInfo.endStr;
+                        const start = new Date(selectedInfo.start);
+                        const end = new Date(selectedInfo.end);
+
+                        const isMultiDay = (end - start) > 24 * 60 * 60 * 1000;
+
+                        if (isMultiDay) {
+                            if (calendarRef.current) {
+                                calendarRef.current.getApi().unselect();
+                            }
+                            return;
+                        }
 
                         setSelectedSlot({
-                            start: new Date(startTime),
-                            end: new Date(endTime)
+                            start,
+                            end
                         });
                     }}
                     eventClick={handleEventClick}
