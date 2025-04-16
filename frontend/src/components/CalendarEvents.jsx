@@ -113,11 +113,15 @@ const CalendarEvents = () => {
                         color="#fbfcfc"
                     />
                 </div>
-            )}
+            )};
 
-            {error && <div className="error-message">{error}</div>}
+            {error &&
+                <div className="text-red-700 text-3xl text-center absolute left-1/2 top-3/12 transform -translate-x-1/2 -translate-y-1/2">
+                    {error}
+                </div>
+            };
 
-            <div className={loading ? 'opacity-20 pointer-events-none' : ''}>
+            <div className={loading || error ? 'opacity-20 pointer-events-none' : ''}>
                 <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -193,7 +197,7 @@ const CalendarEvents = () => {
                     setError={setError}
                     setLoading={setLoading}
                 />
-            )}
+            )};
         </div>
     );
 };
