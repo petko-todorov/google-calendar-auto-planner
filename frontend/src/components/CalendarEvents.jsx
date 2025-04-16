@@ -22,7 +22,7 @@ const CalendarEvents = () => {
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const [eventDialogOpen, setEventDialogOpen] = useState(false); // New state for dialog
+    const [eventDialogOpen, setEventDialogOpen] = useState(false);
 
     const currentViewMonth = useRef({
         year: new Date().getFullYear(),
@@ -134,7 +134,7 @@ const CalendarEvents = () => {
                             click: handleAddEvent,
                         },
                     }}
-                    aspectRatio={2.27}
+                    aspectRatio={2.4}
                     events={formattedEvents}
                     eventTimeFormat={{ hour: '2-digit', minute: '2-digit', hour12: false }}
                     slotLabelFormat={{
