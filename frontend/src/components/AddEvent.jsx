@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, Typography, TextField } from '@mui/material';
 import { addCalendarEvent } from '../services/calendarService';
 import { fetchNewEventAdded } from '../utils/calendarUtils';
 
@@ -15,7 +15,7 @@ const AddEvent = ({
     events,
     setLoadedMonths
 }) => {
-    const [duration, setDuration] = useState(60);
+    // const [duration, setDuration] = useState(60);
     const [availableSlots, setAvailableSlots] = useState([]);
     const [selectedSlotIndex, setSelectedSlotIndex] = useState(0);
 
@@ -26,6 +26,9 @@ const AddEvent = ({
         { value: 90, label: '1.5 hours' },
         { value: 120, label: '2 hours' }
     ];
+
+    const [duration, setDuration] = useState(durationOptions[2].value);
+    const [summary, setSummary] = useState('');
 
     useEffect(() => {
         if (selectedSlot && events) {
@@ -50,10 +53,10 @@ const AddEvent = ({
 
         const slots = [];
         let currentTime = new Date(clickedDate);
-        currentTime.setHours(9, 0, 0, 0); // Default start: 9 AM
+        currentTime.setHours(9, 0, 0, 0);
 
         const endOfSearch = new Date(clickedDate);
-        endOfSearch.setHours(17, 0, 0, 0); // Default end: 5 PM
+        endOfSearch.setHours(17, 0, 0, 0);
 
         while (currentTime < endOfSearch) {
             const slotEnd = new Date(currentTime.getTime() + duration * 60000);
@@ -73,6 +76,7 @@ const AddEvent = ({
         }
 
         setAvailableSlots(slots);
+        setSelectedSlotIndex(0);
     };
 
     const handleAddEvent = async () => {
@@ -81,9 +85,10 @@ const AddEvent = ({
         const selectedSlot = availableSlots[selectedSlotIndex];
 
         try {
-            //  TODO change this
+            if (!summary) return;
+
             const data = await addCalendarEvent({
-                summary: 'New Event',
+                summary: summary,
                 start: { dateTime: selectedSlot.start.toISOString(), timeZone: 'UTC' },
                 end: { dateTime: selectedSlot.end.toISOString(), timeZone: 'UTC' },
                 description: 'new event',
@@ -119,34 +124,53 @@ const AddEvent = ({
             open={open}
             onClose={handleClose}
         >
-            <DialogTitle>
+            <DialogTitle
+                align='center'
+                sx={{ fontWeight: 'bold' }}
+            >
                 Add Event
             </DialogTitle>
             <DialogContent>
-                <div className="mb-6">
-                    <Typography variant="subtitle1">Event Duration:</Typography>
-                    <Select
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        fullWidth
-                    >
-                        {durationOptions.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </div>
+                <Typography
+                    variant="subtitle1"
+                >
+                    Summary:
+                </Typography>
+                <TextField
+                    sx={{ mb: 2 }}
+                    onChange={(e) => setSummary(e.target.value)}
+                    helperText={summary === '' ? 'Enter a summary for the event' : ''}
+                    error={summary === ''}
+                    placeholder='Event Summary...'
+                />
+                <Typography
+                    variant="subtitle1"
+                >
+                    Event Duration:
+                </Typography>
+                <Select
+                    value={duration}
+                    onChange={(e) => setDuration(Number(e.target.value))}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                >
+                    {durationOptions.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </Select>
 
                 {availableSlots.length > 0 ? (
-                    <div>
+                    <>
                         <Typography
-                            variant="subtitle1">
+                            variant="subtitle1"
+                        >
                             Available Time Slots:
                         </Typography>
                         <Select
                             value={selectedSlotIndex}
-                            onChange={(e) => setSelectedSlotIndex(e.target.value)}
+                            onChange={(e) => setSelectedSlotIndex(Number(e.target.value))}
                             fullWidth
                         >
                             {availableSlots.map((slot, index) => (
@@ -155,15 +179,21 @@ const AddEvent = ({
                                 </MenuItem>
                             ))}
                         </Select>
-                    </div>
+                    </>
                 ) : (
-                    <Typography color="error">
+                    <Typography
+                        color="error"
+                    >
                         No available slots found for this duration on the selected day.
                     </Typography>
                 )}
+
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="error">
+                <Button
+                    onClick={handleClose}
+                    color="error"
+                >
                     Cancel
                 </Button>
                 <Button
