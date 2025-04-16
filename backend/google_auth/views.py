@@ -222,12 +222,7 @@ class UserInfoView(APIView):
         try:
             if not request.user.is_authenticated:
                 response = JsonResponse({'error': 'Session expired, please login again'}, status=201)
-                response.set_cookie('access_token', '', max_age=0, expires='Thu, 01 Jan 1970 00:00:00 GMT',
-                                    path='/', httponly=True, secure=True, samesite='None')
-                response.set_cookie('refresh_token', '', max_age=0, expires='Thu, 01 Jan 1970 00:00:00 GMT',
-                                    path='/', httponly=True, secure=True, samesite='None')
-                response.set_cookie('sessionid', '', max_age=0, expires='Thu, 01 Jan 1970 00:00:00 GMT',
-                                    path='/', httponly=True, secure=True, samesite='None')
+                self._clear_all_auth_cookies(response)
                 return Response({'is_authenticated': False})
 
             access_token = request.COOKIES.get('access_token')
@@ -267,6 +262,26 @@ class UserInfoView(APIView):
             print(f"Error retrieving user info: {str(e)}")
             return Response({'error': 'Failed to retrieve user information'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def _clear_all_auth_cookies(self, response):
+        cookies_to_clear = [
+            'access_token',
+            'refresh_token',
+            'sessionid',
+            'csrftoken'
+        ]
+
+        for cookie in cookies_to_clear:
+            response.delete_cookie(
+                cookie,
+                path='/',
+                domain=None,
+                samesite='None',
+                secure=True
+            )
+
+        if hasattr(self.request, 'session'):
+            self.request.session.flush()
 
     @staticmethod
     def _refresh_access_token(request):
@@ -321,6 +336,7 @@ class LogoutView(View):
             response = JsonResponse({'success': True})
             response.delete_cookie('access_token', samesite='None')
             response.delete_cookie('refresh_token', samesite='None')
+            response.delete_cookie('sessionid', samesite='None')
             return response
         except Exception as e:
             print(f"Error during logout: {str(e)}")
