@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, Typography, TextField } from '@mui/material';
 import { addCalendarEvent } from '../services/calendarService';
 import { fetchNewEventAdded } from '../utils/calendarUtils';
@@ -15,7 +15,7 @@ const AddEvent = ({
     events,
     setLoadedMonths
 }) => {
-    // const [duration, setDuration] = useState(60);
+    const inputRef = useRef(null);
     const [availableSlots, setAvailableSlots] = useState([]);
     const [selectedSlotIndex, setSelectedSlotIndex] = useState(0);
 
@@ -35,6 +35,18 @@ const AddEvent = ({
             findAvailableSlots();
         }
     }, [selectedSlot, duration, events]);
+
+    useEffect(() => {
+        if (open) {
+            const frame = requestAnimationFrame(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    inputRef.current.select();
+                }
+            });
+            return () => cancelAnimationFrame(frame); 
+        }
+    }, [open]);
 
     const findAvailableSlots = () => {
         const clickedDate = new Date(selectedSlot.start);
@@ -87,11 +99,11 @@ const AddEvent = ({
         try {
             if (!summary) return;
 
-            const data = await addCalendarEvent({
+            await addCalendarEvent({
                 summary: summary,
                 start: { dateTime: selectedSlot.start.toISOString(), timeZone: 'UTC' },
                 end: { dateTime: selectedSlot.end.toISOString(), timeZone: 'UTC' },
-                description: 'new event',
+                description: '',
             });
 
             await fetchNewEventAdded(
@@ -137,11 +149,13 @@ const AddEvent = ({
                     Summary:
                 </Typography>
                 <TextField
+                    inputRef={inputRef}
                     sx={{ mb: 2 }}
                     onChange={(e) => setSummary(e.target.value)}
                     helperText={summary === '' ? 'Enter a summary for the event' : ''}
                     error={summary === ''}
                     placeholder='Event Summary...'
+                    value={summary}
                 />
                 <Typography
                     variant="subtitle1"
