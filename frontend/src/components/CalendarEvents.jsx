@@ -8,7 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { lineSpinner } from 'ldrs'
 import AddEvent from './AddEvent';
-import EventDetailsDialog from './EventDetailsDialog';
+import DeleteEvent from './DeleteEvent';
 
 lineSpinner.register()
 
@@ -113,13 +113,13 @@ const CalendarEvents = () => {
                         color="#fbfcfc"
                     />
                 </div>
-            )};
+            )}
 
             {error &&
                 <div className="text-red-700 text-3xl text-center absolute left-1/2 top-3/12 transform -translate-x-1/2 -translate-y-1/2">
                     {error}
                 </div>
-            };
+            }
 
             <div className={loading || error ? 'opacity-20 pointer-events-none' : ''}>
                 <FullCalendar
@@ -128,13 +128,17 @@ const CalendarEvents = () => {
                     initialView="dayGridMonth"
                     firstDay={1}
                     headerToolbar={{
-                        left: 'addEventButton',
+                        left: 'addEventButton quickAddButton',
                         center: 'title',
                         right: 'today prev,next'
                     }}
                     customButtons={{
                         addEventButton: {
                             text: 'Add Event',
+                            click: handleAddEvent,
+                        },
+                        quickAddButton: {
+                            text: 'Quick Add',
                             click: handleAddEvent,
                         },
                     }}
@@ -170,7 +174,7 @@ const CalendarEvents = () => {
                     datesSet={handleDatesSet}
                 />
 
-                <EventDetailsDialog
+                <DeleteEvent
                     open={eventDialogOpen}
                     selectedEvent={selectedEvent}
                     handleClose={handleCloseDialog}
@@ -197,7 +201,7 @@ const CalendarEvents = () => {
                     setError={setError}
                     setLoading={setLoading}
                 />
-            )};
+            )}
         </div>
     );
 };

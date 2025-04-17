@@ -5,7 +5,7 @@ import EventDetails from './EventDetails';
 import { deleteCalendarEvent } from '../services/calendarService';
 import { fetchNewEventAdded } from '../utils/calendarUtils';
 
-const EventDetailsDialog = ({
+const DeleteEvent = ({
     open,
     selectedEvent,
     handleClose,
@@ -100,4 +100,4 @@ const EventDetailsDialog = ({
     );
 };
 
-export default EventDetailsDialog;
+export default DeleteEvent;
