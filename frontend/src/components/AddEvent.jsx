@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, Typography, TextField } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, Typography, TextField, DialogContentText } from '@mui/material';
 import { addCalendarEvent } from '../services/calendarService';
 import { fetchNewEventAdded } from '../utils/calendarUtils';
 
@@ -14,7 +14,7 @@ const AddEvent = ({
     setLoading,
     events,
     setLoadedMonths
-}) => {
+}) => {    
     const inputRef = useRef(null);
     const [availableSlots, setAvailableSlots] = useState([]);
     const [selectedSlotIndex, setSelectedSlotIndex] = useState(0);
@@ -99,6 +99,8 @@ const AddEvent = ({
         try {
             if (!summary) return;
 
+            setLoading(true);
+
             await addCalendarEvent({
                 summary: summary,
                 start: { dateTime: selectedSlot.start.toISOString(), timeZone: 'UTC' },
@@ -122,13 +124,20 @@ const AddEvent = ({
             calendarRef.current.getApi().refetchEvents();
         } catch (error) {
             console.error('Error adding event:', error);
-        };
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
 
         handleClose();
     };
 
     const formatTime = (date) => {
         return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
     };
 
     return (
@@ -140,8 +149,15 @@ const AddEvent = ({
                 align='center'
                 sx={{ fontWeight: 'bold' }}
             >
-                Add Event
+                Add Event {}
             </DialogTitle>
+            <DialogContentText  
+                sx={{ fontWeight: 'bold' }}
+                align='center'  
+                variant='h6'    
+            >
+                {formatDate(selectedSlot.start)}
+            </DialogContentText>
             <DialogContent>
                 <Typography
                     variant="subtitle1"
@@ -213,7 +229,8 @@ const AddEvent = ({
                 <Button
                     onClick={handleAddEvent}
                     color="primary"
-                    disabled={availableSlots.length === 0}
+                    disabled={availableSlots.length === 0 || summary === ''}
+                    variant="contained"
                 >
                     Add Event
                 </Button>
