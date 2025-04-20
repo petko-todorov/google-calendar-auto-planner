@@ -9,6 +9,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { lineSpinner } from 'ldrs'
 import AddEvent from './AddEvent';
 import DeleteEvent from './DeleteEvent';
+import QuickAddEvent from './QuickAddEvent';
+
 
 lineSpinner.register()
 
@@ -23,7 +25,8 @@ const CalendarEvents = () => {
     const [openModal, setOpenModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [eventDialogOpen, setEventDialogOpen] = useState(false);
-
+    const [quickAddOpen, setQuickAddOpen] = useState(false);
+    
     const currentViewMonth = useRef({
         year: new Date().getFullYear(),
         month: new Date().getMonth() + 1
@@ -88,6 +91,10 @@ const CalendarEvents = () => {
         setOpenModal(true);
     };
 
+    const handleQuickAddEvent = () => {
+        setQuickAddOpen(true);
+    };
+
     const formattedEvents = events.map(event => ({
         id: event.id,
         title: event.summary || 'Untitled Event',
@@ -139,7 +146,7 @@ const CalendarEvents = () => {
                         },
                         quickAddButton: {
                             text: 'Quick Add',
-                            click: handleAddEvent,
+                            click: handleQuickAddEvent,
                         },
                     }}
                     aspectRatio={2.4}
@@ -202,6 +209,19 @@ const CalendarEvents = () => {
                     setLoading={setLoading}
                 />
             )}
+
+            <QuickAddEvent
+                open={quickAddOpen}
+                handleClose={() => setQuickAddOpen(false)}
+                selectedSlot={selectedSlot}
+                currentViewMonth={currentViewMonth}
+                calendarRef={calendarRef}
+                setEvents={setEvents}
+                setError={setError}
+                setLoading={setLoading}
+                setLoadedMonths={setLoadedMonths}
+                events={events}
+            />
         </div>
     );
 };
